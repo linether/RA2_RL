@@ -1,0 +1,77 @@
+# Game files (copyright, do not commit)
+Ra2Game412/
+Ra2Clean/
+*.mix
+*.exe
+*.dll
+*.pcx
+*.fnt
+*.dat
+*.dat.hash
+*.ini
+!requirements.ini
+Taunts/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints
+*.ipynb
+
+# Training artifacts
+runs/
+logs/
+tensorboard/
+checkpoints/
+models/
+*.pt
+*.pth
+*.ckpt
+*.pkl
+wandb/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+desktop.ini
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/

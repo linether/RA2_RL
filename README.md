@@ -1,5 +1,9 @@
 # RA2_RL
 
+![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Status](https://img.shields.io/badge/status-Phase%200-orange.svg)
+
 基于深度强化学习的《红色警戒2：尤里的复仇》AI 训练框架。
 
 通过内存注入获取游戏状态，封装为 Gymnasium 标准环境，使用 Stable Baselines 3 进行 PPO 训练。

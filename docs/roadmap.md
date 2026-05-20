@@ -1,16 +1,27 @@
 # Roadmap
 
-## Phase 0 — Environment Validation
+## Phase 0 — Environment Validation（验证中，2026-05-18 更新）
 
-**目标：** 验证 `pyra2yr` + `ra2yrcpp` 能稳定读取游戏状态并发送指令。
+**目标：** 双线验证 OpenRA-RL 和 ra2yrcpp 两条技术路线的可行性。
 
-- [ ] 获取纯净版 YR 1.001 安装
-- [ ] 从 `shmocz/ra2yrcpp` Releases 下载预编译 DLL
-- [ ] 通过 Syringe 注入 DLL 到 `gamemd.exe`
-- [ ] `pip install pyra2yr`
-- [ ] 运行连通性测试：启动游戏 → 读取状态 → 发送指令
+### 线路 A — OpenRA-RL 快速验证
+- [x] 创建 Python 虚拟环境 (`<conda_env_path>`, Python 3.10.18)
+- [ ] `pip install openra-rl` — **受阻**：权限错误导致安装失败
+- [ ] 运行脚本 Bot 示例
+- [ ] 评估观测空间/动作空间对 RL 训练的适配度
+- [ ] 测试 headless 并行训练性能
 
-**Exit criteria:** 能程序化启动游戏、读取状态、执行建造与移动指令。
+### 线路 B — ra2yrcpp 重新验证
+- [ ] 安装 CnCNet YR client package
+- [ ] 使用 Syringe + yrpp-spawner 注入 ra2yrcpp
+- [ ] 运行 pyra2yr 连通性测试
+- [ ] 对比原方案 Blocker 是否已解除
+
+**当前阻塞问题：**
+1. **OpenRA-RL 安装失败**：`pip install openra-rl` 安装到最后阶段遇到权限错误（WinError 5），无法写入 `site-packages/openra_env`
+2. **Git 不在系统 PATH**：无法执行 `git push` 同步到远程仓库
+
+**Exit criteria：** 确定最终技术路线（OpenRA-RL 或 ra2yrcpp）。
 
 ## Phase 1 — Minimal Gym Environment
 

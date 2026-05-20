@@ -8,9 +8,13 @@ RA2_RL — 基于强化学习的《尤里的复仇》AI 训练框架。
 
 ## Current Status
 
-**Phase 0 — Environment Validation**（进行中）
+**Phase 0 — Environment Validation**（进行中,2026-05-21)
 
-Blocker: 需要纯净版 YR 1.001（无 Ares/Phobos 补丁），平台版 `Ra2Game412/` 不可用于 `ra2yrcpp` 注入。
+双线验证中:
+- **线路 A (OpenRA-RL)**:`openra-rl 0.4.1` 已装,import 通过。**当前 Blocker:Docker Desktop 未安装**(`openra-rl doctor` 报 `Docker CLI: not found`)
+- **线路 B (ra2yrcpp)**:未启动。调研报告显示 2026-01 起 ra2yrcpp 已适配 CnCNet YR client,原"必须纯净版 1.001"的 Blocker 可能已解除
+
+详见 [`docs/roadmap.md`](docs/roadmap.md) 与 [`docs/research-report-2026-05.md`](docs/research-report-2026-05.md)。
 
 ## Key Documents
 
@@ -32,6 +36,6 @@ Blocker: 需要纯净版 YR 1.001（无 Ares/Phobos 补丁），平台版 `Ra2Ga
 
 ## Next Step
 
-1. 获取纯净版 YR 1.001 → `Ra2Clean/`
-2. 下载 `ra2yrcpp` 预编译 DLL
-3. `pip install pyra2yr` 并运行连通性测试
+1. **线路 A**:安装 Docker Desktop → `openra-rl doctor` 全绿 → 跑脚本 Bot 示例
+2. **线路 B**(并行):获取 CnCNet YR client + ra2yrcpp Release → Syringe 注入 → pyra2yr 连通性
+3. 任一线通过即可 Exit Phase 0,写 ADR-0005 决定最终技术栈

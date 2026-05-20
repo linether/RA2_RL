@@ -65,6 +65,9 @@ wandb/
 *~
 .DS_Store
 
+# Claude Code session metadata
+.claude/
+
 # OS
 Thumbs.db
 desktop.ini

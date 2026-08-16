@@ -1,6 +1,10 @@
 # Game files (copyright, do not commit)
 Ra2Game412/
+Ra2Game412-rl/
 Ra2Clean/
+third_party/
+debug_shots/
+*.zip
 *.mix
 *.exe
 *.dll
@@ -48,6 +52,7 @@ ENV/
 # Training artifacts
 runs/
 logs/
+*.log
 tensorboard/
 checkpoints/
 models/

@@ -2,9 +2,9 @@
 
 ## Status
 
-**Proposed** — 决议待 Phase 0 双线验证完成后定稿(2026-05-21 起草)
+**Accepted**(2026-06-11 定稿;2026-05-21 起草)— Phase 0 双线验证均通过,采纳预案 3
 
-本 ADR 一旦 Accept,**将超越/部分推翻 ADR-0002 与 ADR-0004**,见末尾"Supersedes"。
+本 ADR **Supersedes ADR-0002 / Updates ADR-0004**,见末尾"Supersedes"。
 
 ## Context
 
@@ -45,52 +45,50 @@ ADR-0002 选择内存注入路线,ADR-0004 进一步约束开发环境必须是�
 | E: 直接用 OpenRA RA2 mod | OpenRA | ⭐⭐ 需自建接口 | ✅ | ❌ | 拒绝(被 A 覆盖) |
 | F: 屏幕捕获 + CV | 任何版本 | ⭐⭐⭐ | ⭐⭐ | ✅ | 兜底,不主推 |
 
-## Phase 0 双线验证当前进展(2026-05-21)
+## Phase 0 双线验证结果(2026-06-11,均通过)
 
-**线路 A — OpenRA-RL**
-- ✅ `openra-rl 0.4.1` 装于 venv `ra2rl`(Python 3.10.18)
-- ✅ `import openra_env`、`openra-rl doctor` 通过
-- ⏳ Blocker:Docker Desktop 未安装 → 无法跑 `openra-rl play`
+**线路 A — OpenRA-RL** ✅
+- `openra-rl 0.4.1` 装于 venv `ra2rl`(Python 3.10.18),`import openra_env` / `openra-rl doctor` 全绿
+- Docker Desktop 装于 `D:\DockerDesktop`(WSL2 backend,数据 `D:\DockerData`)。镜像 `latest` tag 上游只推了 arm64,需拉 `0.4.1`(含 amd64)再本地 tag 成 latest
+- `openra-rl server start` 容器 healthy(:8000);OpenEnv reset/step/观测/奖励流通过
+- **完整 episode 闭环**:DEPLOY(mcv→fact)+ SURRENDER → `done=True / result='lose' / reward=-0.999`(`scripts/a3_surrender_test.py`)
 
-**线路 B — ra2yrcpp + pyra2yr**
-- ✅ `pyra2yr 0.3.0` 装于 venv `ra2rl-b`(Python 3.11.15)
-- ✅ `ExManager`、`ra2yrproto` import 通过
-- ⏳ Blocker:CnCNet YR client + ra2yrcpp.zip + Syringe.exe 未到位 → 无法注入
+**线路 B — ra2yrcpp + pyra2yr** ✅
+- `pyra2yr 0.3.0` 装于 venv `ra2rl-b`(Python 3.11.15)
+- 注入方式实际走 **Method 3 二进制补丁**(`patch_gamemd.py --auto-patch` 生成 `gamemd-spawn-ra2yrcpp.exe`),**无需 CnCNet client / Syringe / yrpp-spawner** —— 比起草时设想的更轻
+- `gamemd-spawn-ra2yrcpp.exe -SPAWN` 注入 6 hook、:14521 监听;pyra2yr 逐帧读状态 + deploy 指令生效 + 完整 episode 自然结束(人类 defeated→EXIT_GAME)
 
-任一线先通过,该线即为本 ADR 的 Decision。两线并行不冲突(分属不同 venv,
-依赖不相容但分隔)。
+两线均在 2026-06-11 跑通完整 episode,**预案 4(回退屏幕捕获)排除**。
 
-## Decision(待定)
+## Decision:预案 3(双线并存)
 
-**预案 1(若线路 B 先通)**:采纳 ra2yrcpp + pyra2yr,但 ADR-0004 的"必须纯净版 1.001"
-约束改为"CnCNet YR client + Syringe + yrpp-spawner 组合即可"。
-ADR-0002 维持不变(内存注入路线)。
+**训练环境用 OpenRA-RL**(headless / Docker / 可并发 / OpenEnv 标准接口 / 社区活跃),
+**保留 ra2yrcpp + pyra2yr 作为"原版保真验证 + 录像录制"工具**,
+部署到中国对战平台留待 Phase 5 独立适配(可能借助方案 F 屏幕捕获)。
 
-**预案 2(若线路 A 先通)**:采纳 OpenRA-RL 作为训练环境,**承认引擎不再是原版 YR**,
-ADR-0002 部分作废(改为"基于 OpenRA 引擎的 RA2 重制"),ADR-0004 彻底作废。
-部署到中国对战平台改为后期 Phase 5 的独立适配问题(可能借助方案 F 屏幕捕获)。
+理由:线路 A 的 headless + 并发 + 标准 Gym 接口直接决定 Phase 2 训练迭代效率(Decision Driver #2),
+是训练主路;线路 B 虽必须开真实窗口、并行度受限,但它是唯一在**原版二进制**上运行的路线,
+对最终部署保真度(Driver #3)有不可替代的价值,作为旁路保留成本很低(独立 venv)。
 
-**预案 3(两线都通)**:训练用 OpenRA-RL(headless / 并发 64 局 / 跨平台 / 社区活跃),
-保留 ra2yrcpp 作为"原版保真验证 + 录像录制"工具,部署还是看 Phase 5。
-
-**预案 4(两线都不通)**:回退到方案 F 屏幕捕获 + CV(代价高,迭代慢,
-但兼容性最好)。立项条件:线路 A 与线路 B 均在 2026-06 月底前无法跑通一次完整 episode。
+**对比起草时的预期修正**:线路 B 的注入门槛比 ADR-0004 担心的低得多——二进制补丁法不依赖
+纯净版 1.001,也不需要 CnCNet client,平台版 `Ra2Game412/` 的 `gamemd-spawn.exe` 直接可补丁。
+ADR-0004"必须纯净版"的刚性约束因此降级为"测试用纯净副本目录"的工程惯例。
 
 ## Consequences
 
-待 Decision 定稿后填写。预期需修订的下游内容:
+- 训练主路定为 OpenRA-RL:`README.md` / `docs/architecture.md` 的"YR 原版"语言需标注
+  "训练引擎为 OpenRA RA2 重制,原版保真由线路 B 旁路保证";观测/动作空间按 OpenEnv 接口写
+- `requirements.txt` 两套(`ra2rl` 留 openra-rl,`ra2rl-b` 留 pyra2yr),因 Python/numpy 版本不相容必须分 venv
+- Phase 1 `RA2Env`:**先封装 OpenRA-RL 的 OpenEnv→Gymnasium**(异步 client 已是现成的 reset/step);
+  pyra2yr 的异步→同步适配层延后到需要原版验证时再做
+- `docs/adr/README.md` 标 ADR-0005 Accepted,ADR-0002 Superseded,ADR-0004 Updated
 
-- 若选预案 2:`README.md`、`CLAUDE.md`、`docs/architecture.md` 需把"YR 原版"语言
-  改为"OpenRA RA2 mod",观测/动作空间章节按 OpenRA-RL 的 OpenEnv 接口重写
-- `requirements.txt` 按选定路线改:留 `openra-rl` 或 留 `pyra2yr` 安装链接
-- `ra2_env/` 设计取决于路线:OpenEnv wrapper vs 自建 pyra2yr 异步→同步适配层
-- `docs/adr/README.md` Index 更新本 ADR 状态,并对 ADR-0002/0004 标 Superseded 或 Updated
+## Supersedes / Updates
 
-## Supersedes / Updates(预填,待 Decision 定后激活)
-
-- 若选预案 2:**Supersedes ADR-0002**(改为 OpenRA-RL OpenEnv 接口)、
-  **Supersedes ADR-0004**(无纯净版要求)
-- 若选预案 1:**Updates ADR-0004**(约束放宽到 CnCNet client)
+- **Supersedes ADR-0002**:训练路线从"原版内存注入唯一"改为"OpenRA-RL OpenEnv 为主,
+  ra2yrcpp 内存注入为原版保真旁路"
+- **Updates ADR-0004**:"必须无补丁纯净版 YR 1.001"降级为"线路 B 测试用纯净副本目录"的工程惯例,
+  不再是硬约束(二进制补丁法对平台版 spawner 即可工作)
 
 ## References
 

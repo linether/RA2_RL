@@ -8,34 +8,41 @@ RA2_RL — 基于强化学习的《尤里的复仇》AI 训练框架。
 
 ## Current Status
 
-**Phase 0 — Environment Validation**（进行中,2026-05-21)
+**Phase 0 — Environment Validation ✅ 达成**（2026-06-11，线路 B 全线打通）
 
-双线验证中:
-- **线路 A (OpenRA-RL)**:`openra-rl 0.4.1` 已装,import 通过。**当前 Blocker:Docker Desktop 未安装**(`openra-rl doctor` 报 `Docker CLI: not found`)
-- **线路 B (ra2yrcpp)**:未启动。调研报告显示 2026-01 起 ra2yrcpp 已适配 CnCNet YR client,原"必须纯净版 1.001"的 Blocker 可能已解除
+- **线路 B (ra2yrcpp 原版注入)**：✅ 完整跑通。补丁版 spawner `Ra2Game412-rl\gamemd-spawn-ra2yrcpp.exe -SPAWN` 启动游戏 → pyra2yr 连 `127.0.0.1:14521` 逐帧读状态 → deploy MCV 指令生效 → 一局完整 episode（开局→defeated→EXIT_GAME）。验证脚本在 `scripts/`（gen_spawn_b3 / b4_connect_test / b5_command_test）。
+- **线路 A (OpenRA-RL)**：Docker Desktop 装在 `D:\DockerDesktop`（数据 `D:\DockerData`，不占 C 盘），doctor 全绿，server 容器 healthy（端口 8000），OpenEnv reset/step/观测/奖励验证通过；`done=True` 长跑验证中。注意：镜像 `latest` tag 只有 arm64，**必须拉 `0.4.1` 再本地 tag 成 latest**。
+- **ADR-0005 已定稿（Accepted，2026-06-11）**：预案 3 双线并存——训练主路 OpenRA-RL headless，ra2yrcpp 作原版保真验证/录像旁路。
 
-详见 [`docs/roadmap.md`](docs/roadmap.md) 与 [`docs/research-report-2026-05.md`](docs/research-report-2026-05.md)。
+详见 [`docs/roadmap.md`](docs/roadmap.md)（含线路 B 踩坑记录）。
 
 ## Key Documents
 
 - [`README.md`](README.md) — 项目概览
 - [`docs/architecture.md`](docs/architecture.md) — 系统架构
-- [`docs/roadmap.md`](docs/roadmap.md) — 开发路线图
+- [`docs/roadmap.md`](docs/roadmap.md) — 开发路线图 + Phase 0 踩坑记录
 - [`docs/technical-notes.md`](docs/technical-notes.md) — 技术约束
 - [`docs/adr/`](docs/adr/) — 架构决策记录
 
+## Multi-Agent Collaboration
+
+Phase 1 起采用 10 Agent 并行开发：工作区 `agents/agent-XX-*/`（TASK.md 任务书 + PROGRESS.md 进度日志），协作章程 [`agents/README.md`](agents/README.md)（写权限边界、接口契约 v1、Git 纪律），共享看板 [`agents/BOARD.md`](agents/BOARD.md)（进度互见/广播/决策）。新会话或新 Agent **先读章程再开工**。
+
 ## Core Constraints
 
-1. **开发环境必须是纯净版 YR 1.001**（含 Ares/Phobos 的目录不能用，见 ADR-0004）
-2. **`pyra2yr` 不提供 Gymnasium 接口**，需自行封装 `RA2Env`
-3. **Phase 0 未通过前不写 RL 代码**
+1. **测试/训练用 `Ra2Game412-rl\` 纯净副本**，不动原 `Ra2Game412\`（ADR-0004 放宽后的现行约束）
+2. **`pyra2yr` 不提供 Gymnasium 接口**，需自行封装 `RA2Env`；其 `Game` 启动器在 Windows 上不可用（仅 Docker/Wine），需手动启动 spawner
+3. **线路 B 跑训练必须开真实游戏窗口**（原版无 headless），并行度受限——这是 ADR-0005 权衡的核心
+4. **每次开游戏窗口测试后必须清理 gamemd 进程**（用户要求：不留窗口）
 
 ## Stack
 
-`pyra2yr` + `ra2yrcpp` → Gymnasium → Stable Baselines 3 (PPO) → PyTorch
+双轨：
+- A: openra-rl 0.4.1 (OpenEnv) @ `E:\conda_envs\ra2rl`（Python 3.10）+ Docker `ghcr.io/yxc20089/openra-rl:0.4.1`
+- B: ra2yrcpp `ee215f5` + pyra2yr 0.3.0 @ `E:\conda_envs\ra2rl-b`（Python 3.11）
+- 下游：Gymnasium → Stable Baselines 3 (PPO) → PyTorch
 
 ## Next Step
 
-1. **线路 A**:安装 Docker Desktop → `openra-rl doctor` 全绿 → 跑脚本 Bot 示例
-2. **线路 B**(并行):获取 CnCNet YR client + ra2yrcpp Release → Syringe 注入 → pyra2yr 连通性
-3. 任一线通过即可 Exit Phase 0,写 ADR-0005 决定最终技术栈
+1. Phase 1：`RA2Env` 最小 Gymnasium 环境 —— 10 Agent 并行开发（见 `agents/`，出口标准：随机 Agent 连续 100 局不崩溃）
+2. 提交纪律：多 Agent 日常集成按 `agents/README.md` 章程自主 commit/push（conventional 格式 + 只报名下文件）；重大决策/契约变更仍需用户确认

@@ -9,7 +9,7 @@
 | ID | Title | Status |
 |----|-------|--------|
 | [0001](0001-target-yuris-revenge.md) | 目标游戏选择 Yuri's Revenge | Accepted |
-| [0002](0002-memory-injection.md) | 采用内存注入获取游戏状态 | Accepted (待 ADR-0005 复审) |
+| [0002](0002-memory-injection.md) | 采用内存注入获取游戏状态 | Superseded by ADR-0005 |
 | [0003](0003-single-agent-ppo-baseline.md) | 使用单 Agent PPO 作为基线架构 | Accepted |
-| [0004](0004-clean-yr-as-dev-env.md) | 开发环境使用纯净版 YR 1.001 | Accepted (待 ADR-0005 复审) |
-| [0005](0005-final-tech-stack.md) | 最终技术栈决定(双线验证) | Proposed |
+| [0004](0004-clean-yr-as-dev-env.md) | 开发环境使用纯净版 YR 1.001 | Updated by ADR-0005 |
+| [0005](0005-final-tech-stack.md) | 最终技术栈决定(双线验证) | Accepted (预案 3，2026-06-11) |

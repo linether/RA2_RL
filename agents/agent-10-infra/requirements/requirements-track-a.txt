@@ -1,0 +1,27 @@
+# 线路 A（训练主路）依赖清单 —— venv A
+# ---------------------------------------------------------------------------
+# venv     : E:\conda_envs\ra2rl  (Python 3.10.18)
+# 安装     : E:\conda_envs\ra2rl\Scripts\python.exe -m pip install -r requirements\requirements-track-a.txt
+# 版本基线 : 2026-08-17 以 venv A pip 实测为准（Agent-10 维护）
+# 变更流程 : 新增/升级先在 agents/BOARD.md 广播区通报，确认后由 Agent-10 收编（章程 §6）
+# ---------------------------------------------------------------------------
+
+# --- 环境客户端（Agent-01..05 依赖）---
+openra-rl==0.4.1
+openra-rl-util==0.1.0        # openra-rl 的传递依赖，一并冻结
+
+# --- RL 基础设施 ---
+gymnasium==1.3.0
+numpy==2.2.6                 # 上限 <2.3（ADR-0005 技术栈约束）
+
+# --- 训练栈（Agent-07 集成时安装，装后版本在 BOARD 通报冻结）---
+stable-baselines3>=2.3
+torch>=2.1
+tensorboard>=2.14
+
+# --- 传递依赖 pin（openra-rl 拉入，实测版本）---
+protobuf==6.33.6
+
+# --- 开发/测试工具（Agent-10，CI 同源：pyproject [project.optional-dependencies].dev）---
+pytest==9.1.1
+ruff==0.16.3

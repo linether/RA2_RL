@@ -16,7 +16,7 @@
 | 07 | SB3/PPO 训练集成 | `agents/agent-07-training` | 🟡 | 任务书已下发，等待启动 | 2026-08-16 |
 | 08 | 评估体系 | `agents/agent-08-evaluation` | 🟡 | 任务书已下发，等待启动 | 2026-08-16 |
 | 09 | 线路 B 原版保真旁路 | `agents/agent-09-track-b` | 🟡 | 任务书已下发，等待启动 | 2026-08-16 |
-| 10 | 测试/CI/工程基础设施 | `agents/agent-10-infra` | 🔵 | M1 测试基建已集成：pyproject markers + conftest obs 工厂 + 13 单测全绿；下一步 CI | 2026-08-16 |
+| 10 | 测试/CI/工程基础设施 | `agents/agent-10-infra` | 🔵 | M2 已集成：CI workflow + requirements 两轨拆分；根 requirements 指向已提案 | 2026-08-17 |
 
 ## 主树集成登记
 
@@ -24,13 +24,16 @@
 
 | 日期 | Agent | 文件 | commit |
 |------|-------|------|--------|
-| 2026-08-16 | 10 | `pyproject.toml`、`tests/conftest.py`、`tests/test_obs_factory.py` | (本提交) |
+| 2026-08-17 | 10 | `pyproject.toml`（find 模式）、`.github/workflows/ci.yml`、`requirements/requirements-track-a.txt`、`requirements/requirements-track-b.txt` | (本提交) |
+| 2026-08-16 | 10 | `pyproject.toml`、`tests/conftest.py`、`tests/test_obs_factory.py` | 74049de |
 
 ## 广播区（追加式，必须署名）
 
 > 用途：跨模块提问、bug 报告、依赖版本通报、契约变更回复。格式：`[Agent-XX · 日期] 内容`。
 
 - [Agent-10 · 2026-08-16] **依赖通报（章程 §6）**：venv A 新装 `pytest 9.1.1`、`ruff 0.16.3`（测试/lint 工具，将进 requirements-track-a 的 dev 组）。其余 venv A 包无变化。
+- [Agent-10 · 2026-08-17] **CI 上线 + 红灯规则（全队生效）**：`.github/workflows/ci.yml` 已集成——push/PR 到 main 触发，windows-latest + Python 3.10，跑 `pytest`（仅 unit marker）+ `ruff check .`，任务书要求 <2 分钟（超时上限 10 分钟）。**红灯规则：CI 失败 = 相关集成回滚，或 24h 内修复**；集成前请在本地先跑 `pytest`（默认即 unit）与 `ruff check .`。首跑由本次 push 触发，红灯请自查是否误标 marker 或引入网络/游戏依赖。
+- [Agent-10 · 2026-08-17] **requirements 两轨拆分完成（版本基线冻结）**：`requirements/requirements-track-a.txt`（venv A 实测：openra-rl 0.4.1 / gymnasium 1.3.0 / numpy 2.2.6 / protobuf 6.33.6 / pytest 9.1.1 / ruff 0.16.3；sb3/torch/tensorboard 留范围待 Agent-07 装后通报）与 `requirements/requirements-track-b.txt`（venv B 实测：pyra2yr 0.3.0 / numpy 1.26.4 / protobuf 4.25.1，Python ≥3.11）。**今后装新包请通报版本，勿自行手写 requirements**；两 venv 依赖互斥，严禁混装。
 - [Agent-10 · 2026-08-16] **测试基建上线（M1），全队请注意跑法**：主树 `pytest` 默认只跑 `unit` marker（`addopts=-m unit`）；跑其他组用 `-m` 覆盖（如 `pytest -m "unit or integration"`）；`integration`/`trackb` 需设 `RA2RL_INTEGRATION=1`/`RA2RL_TRACKB=1` 才会执行，否则 skip（防 CI/裸跑误开游戏）。**造 obs 请用 `tests/conftest.py` 的工厂**（`make_observation`/`make_unit`/`make_building` + `empty/sample/won/lost_observation` 场景 fixture），勿在各测试手写模型类；工厂在无 openra-rl 的环境自动回退 stub，单测不必装重依赖。另：`scripts/*` 已豁免 ruff E501（b4_connect_test.py:40 有 115 字符遗留长行，风格问题不拦 CI，语义检查仍保留；如需清理请名下 Agent 自理）。
 
 ## 决策日志（追加式提案）
@@ -38,3 +41,5 @@
 > 契约/章程变更流程：提案 → 受影响方在广播区回复确认 → 提案方实施并在此记录结果。
 
 - [2026-08-16 · 主项目] 章程与接口契约 v1 冻结，10 工作区初始化完成，Phase 1 并行开发启动。
+- [2026-08-17 · Agent-10 提案] **根 `requirements.txt` 改为指向两轨清单**：现文件混装 A/B 两线依赖（pyra2yr 在 venv A 装不上、`numpy>=1.24` 与 venv B 的 <2.0 冲突），实际不可用。提案：改为两行注释分别指向 `requirements\requirements-track-a.txt` / `-b.txt`（TASK.md 已授权，走本提案流程）。**若无异议，9:30 实施并回填结果**；有异议请在广播区回复。
+- [2026-08-17 · Agent-10 提案] **README.md Status 区加 CI 徽章**：CI 已上线，建议主项目在 README 顶部加一行 `[![CI](https://github.com/linether/RA2_RL/actions/workflows/ci.yml/badge.svg)](...)`；README 归主项目，请主项目确认后自行添加（或授权 Agent-10 添加）。

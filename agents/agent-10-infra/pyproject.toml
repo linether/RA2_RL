@@ -23,9 +23,11 @@ dev = [
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools]
-# 只把 ra2_env 声明为包，避免 flat-layout 自动发现把 scripts/train/eval 当包
-packages = ["ra2_env"]
+[tool.setuptools.packages.find]
+# 用 find 而非显式列表：主树 ra2_env/ 尚未集成（空目录 git 不跟踪），
+# 显式 packages=["ra2_env"] 会让 pip install -e . 直接失败；find 模式找不到时
+# 装空元数据包，Agent-01 集成后自动纳入。scripts/train/eval 不是包，不收集。
+include = ["ra2_env*"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"

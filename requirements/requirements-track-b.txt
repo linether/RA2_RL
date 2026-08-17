@@ -1,0 +1,12 @@
+# 线路 B（原版保真旁路）依赖清单 —— venv B，Python ≥3.11
+# ---------------------------------------------------------------------------
+# venv     : E:\conda_envs\ra2rl-b  (Python 3.11.15)
+# 安装     : E:\conda_envs\ra2rl-b\Scripts\python.exe -m pip install -r requirements\requirements-track-b.txt
+# 版本基线 : 2026-08-17 以 venv B pip 实测为准（Agent-10 维护）
+# 警告     : 与线路 A 的 numpy/protobuf 版本不兼容，两 venv 严禁混装（章程 §6）
+# 变更流程 : 新增/升级先在 agents/BOARD.md 广播区通报，确认后由 Agent-10 收编
+# ---------------------------------------------------------------------------
+
+pyra2yr==0.3.0               # 原版游戏内存读写（Agent-09 专属）
+numpy==1.26.4                # 上限 <2.0（pyra2yr 0.3.0 约束）
+protobuf==4.25.1             # pyra2yr 传递依赖，实测版本

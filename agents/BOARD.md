@@ -13,7 +13,7 @@
 | 04 | 奖励函数 | `agents/agent-04-reward` | 🟡 | 任务书已下发，等待启动 | 2026-08-16 |
 | 05 | 稳定性与崩溃恢复 | `agents/agent-05-recovery` | 🟡 | 任务书已下发，等待启动 | 2026-08-16 |
 | 06 | 随机 Agent 压力测试 | `agents/agent-06-random-agent` | 🟡 | 任务书已下发，等待启动 | 2026-08-16 |
-| 07 | SB3/PPO 训练集成 | `agents/agent-07-training` | 🟡 | 任务书已下发，等待启动 | 2026-08-16 |
+| 07 | SB3/PPO 训练集成 | `agents/agent-07-training` | 🔵 | SB3 装毕并通报版本；train/config+train_ppo 工作区完成，mock 管线验证中（resume/VecNormalize 已通） | 2026-08-17 |
 | 08 | 评估体系 | `agents/agent-08-evaluation` | 🟡 | 任务书已下发，等待启动 | 2026-08-16 |
 | 09 | 线路 B 原版保真旁路 | `agents/agent-09-track-b` | 🟡 | 任务书已下发，等待启动 | 2026-08-16 |
 | 10 | 测试/CI/工程基础设施 | `agents/agent-10-infra` | 🔵 | M2 已集成：CI workflow + requirements 两轨拆分；根 requirements 指向已提案 | 2026-08-17 |
@@ -34,6 +34,8 @@
 - [Agent-10 · 2026-08-16] **依赖通报（章程 §6）**：venv A 新装 `pytest 9.1.1`、`ruff 0.16.3`（测试/lint 工具，将进 requirements-track-a 的 dev 组）。其余 venv A 包无变化。
 - [Agent-10 · 2026-08-17] **CI 上线 + 红灯规则（全队生效）**：`.github/workflows/ci.yml` 已集成——push/PR 到 main 触发，windows-latest + Python 3.10，跑 `pytest`（仅 unit marker）+ `ruff check .`，任务书要求 <2 分钟（超时上限 10 分钟）。**红灯规则：CI 失败 = 相关集成回滚，或 24h 内修复**；集成前请在本地先跑 `pytest`（默认即 unit）与 `ruff check .`。首跑由本次 push 触发，红灯请自查是否误标 marker 或引入网络/游戏依赖。
 - [Agent-10 · 2026-08-17] **requirements 两轨拆分完成（版本基线冻结）**：`requirements/requirements-track-a.txt`（venv A 实测：openra-rl 0.4.1 / gymnasium 1.3.0 / numpy 2.2.6 / protobuf 6.33.6 / pytest 9.1.1 / ruff 0.16.3；sb3/torch/tensorboard 留范围待 Agent-07 装后通报）与 `requirements/requirements-track-b.txt`（venv B 实测：pyra2yr 0.3.0 / numpy 1.26.4 / protobuf 4.25.1，Python ≥3.11）。**今后装新包请通报版本，勿自行手写 requirements**；两 venv 依赖互斥，严禁混装。
+- [Agent-07 · 2026-08-17] **依赖通报（章程 §6，请 Agent-10 收编冻结）**：venv A 新装 `stable-baselines3==2.9.0`、`tensorboard==2.21.0`、`torch==2.13.0`（CPU 版，Windows 默认 wheel），传递依赖 `absl-py==2.5.0`、`markdown==3.10.3`、`mpmath==1.3.0`、`networkx==3.4.2`、`sympy==1.14.0`、`tensorboard-data-server==0.7.2`、`werkzeug==3.1.8`。gymnasium 1.3.0 / numpy 2.2.6 未动，与 SB3 2.9.0 实测兼容（mock 管线已跑通）。requirements-track-a 里 `stable-baselines3>=2.3` / `torch>=2.1` / `tensorboard>=2.14` 可按上述实测版本冻结。
+- [Agent-07 · 2026-08-17] **给 Agent-02**：mock 观测维度暂用常量 `MOCK_OBS_DIM=64`（train/train_ppo.py），你公布真实维度后我来对齐；动作数按契约取 `MOCK_N_ACTIONS=12`。
 - [Agent-10 · 2026-08-16] **测试基建上线（M1），全队请注意跑法**：主树 `pytest` 默认只跑 `unit` marker（`addopts=-m unit`）；跑其他组用 `-m` 覆盖（如 `pytest -m "unit or integration"`）；`integration`/`trackb` 需设 `RA2RL_INTEGRATION=1`/`RA2RL_TRACKB=1` 才会执行，否则 skip（防 CI/裸跑误开游戏）。**造 obs 请用 `tests/conftest.py` 的工厂**（`make_observation`/`make_unit`/`make_building` + `empty/sample/won/lost_observation` 场景 fixture），勿在各测试手写模型类；工厂在无 openra-rl 的环境自动回退 stub，单测不必装重依赖。另：`scripts/*` 已豁免 ruff E501（b4_connect_test.py:40 有 115 字符遗留长行，风格问题不拦 CI，语义检查仍保留；如需清理请名下 Agent 自理）。
 
 ## 决策日志（追加式提案）

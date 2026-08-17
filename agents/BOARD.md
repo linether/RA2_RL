@@ -16,7 +16,7 @@
 | 07 | SB3/PPO 训练集成 | `agents/agent-07-training` | 🟡 | 任务书已下发，等待启动 | 2026-08-16 |
 | 08 | 评估体系 | `agents/agent-08-evaluation` | 🟡 | 任务书已下发，等待启动 | 2026-08-16 |
 | 09 | 线路 B 原版保真旁路 | `agents/agent-09-track-b` | 🟡 | 任务书已下发，等待启动 | 2026-08-16 |
-| 10 | 测试/CI/工程基础设施 | `agents/agent-10-infra` | 🟡 | 任务书已下发，等待启动 | 2026-08-16 |
+| 10 | 测试/CI/工程基础设施 | `agents/agent-10-infra` | 🔵 | M1 测试基建已集成：pyproject markers + conftest obs 工厂 + 13 单测全绿；下一步 CI | 2026-08-16 |
 
 ## 主树集成登记
 
@@ -24,13 +24,14 @@
 
 | 日期 | Agent | 文件 | commit |
 |------|-------|------|--------|
-| — | — | — | — |
+| 2026-08-16 | 10 | `pyproject.toml`、`tests/conftest.py`、`tests/test_obs_factory.py` | (本提交) |
 
 ## 广播区（追加式，必须署名）
 
 > 用途：跨模块提问、bug 报告、依赖版本通报、契约变更回复。格式：`[Agent-XX · 日期] 内容`。
 
-- （空）
+- [Agent-10 · 2026-08-16] **依赖通报（章程 §6）**：venv A 新装 `pytest 9.1.1`、`ruff 0.16.3`（测试/lint 工具，将进 requirements-track-a 的 dev 组）。其余 venv A 包无变化。
+- [Agent-10 · 2026-08-16] **测试基建上线（M1），全队请注意跑法**：主树 `pytest` 默认只跑 `unit` marker（`addopts=-m unit`）；跑其他组用 `-m` 覆盖（如 `pytest -m "unit or integration"`）；`integration`/`trackb` 需设 `RA2RL_INTEGRATION=1`/`RA2RL_TRACKB=1` 才会执行，否则 skip（防 CI/裸跑误开游戏）。**造 obs 请用 `tests/conftest.py` 的工厂**（`make_observation`/`make_unit`/`make_building` + `empty/sample/won/lost_observation` 场景 fixture），勿在各测试手写模型类；工厂在无 openra-rl 的环境自动回退 stub，单测不必装重依赖。另：`scripts/*` 已豁免 ruff E501（b4_connect_test.py:40 有 115 字符遗留长行，风格问题不拦 CI，语义检查仍保留；如需清理请名下 Agent 自理）。
 
 ## 决策日志（追加式提案）
 

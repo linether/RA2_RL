@@ -1,0 +1,60 @@
+# RA2_RL 工程配置（Agent-10 维护）
+#
+# 运行时依赖不走 [project].dependencies，以 requirements/ 拆分清单为准
+# （requirements-track-a.txt / requirements-track-b.txt，Agent-10 维护）。
+# dev 组仅供本地/CI 跑单测与 lint：pip install -e ".[dev]"
+
+[project]
+name = "ra2-rl"
+version = "0.1.0"
+description = "Red Alert 2 reinforcement learning environment and training stack"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.4",
+    "gymnasium>=0.29",
+    "numpy>=1.24",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+# 只把 ra2_env 声明为包，避免 flat-layout 自动发现把 scripts/train/eval 当包
+packages = ["ra2_env"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+# 让 tests/ 能 import 主树的 ra2_env / train / eval
+pythonpath = ["."]
+# 默认只跑 unit；跑其他组用 -m 覆盖，如：pytest -m integration / pytest -m "unit or integration"
+addopts = "-m unit -ra"
+markers = [
+    "unit: 纯逻辑单测，无外部依赖（默认运行，CI 只跑这个）",
+    "integration: 需要 openra-rl Docker server（localhost:8000），CI 不跑",
+    "trackb: 线路 B 专属，需要真实游戏进程（仅 venv B），CI 不跑",
+]
+
+[tool.ruff]
+line-length = 100
+# 原版游戏目录 / 纯净副本 / 第三方源码 / 截图产物 / 各 Agent 开发草稿，一律不查
+exclude = [
+    "Ra2Game412",
+    "Ra2Game412-rl",
+    "third_party",
+    "debug_shots",
+    "agents",
+]
+
+[tool.ruff.lint]
+# 只开默认规则集 E/F，不搞全家桶（TASK.md 技术要点）
+select = ["E", "F"]
+
+[tool.ruff.lint.per-file-ignores]
+# Phase 0 遗留脚本（b4/b5 等）有长打印行，风格问题不拦 CI；语义检查 E/F 保留
+"scripts/*" = ["E501"]

@@ -5,6 +5,8 @@
 ![Status](https://img.shields.io/badge/status-Phase%200-orange.svg)
 ![Project](https://img.shields.io/badge/project-public-blueviolet.svg)
 
+English | [中文](README.zh-CN.md)
+
 A research and engineering project for building a Reinforcement Learning environment around Red Alert 2: Yuri's Revenge.
 
 This repository aims to provide a clean bridge from the original game runtime to a Gymnasium-style interface, with RL training entry points and a realistic validation path for both original-game and OpenRA-based experiments.
@@ -66,8 +68,11 @@ Compared with those projects, this repository is intentionally positioned as the
 ```text
 RA2_RL/
 ├── README.md
+├── README.zh-CN.md
 ├── CLAUDE.md
 ├── LICENSE
+├── CONTRIBUTING.md
+├── SECURITY.md
 ├── pyproject.toml
 ├── requirements/
 ├── scripts/
@@ -77,14 +82,18 @@ RA2_RL/
 ├── ra2_env/
 ├── docs/
 │   ├── architecture.md
+│   ├── architecture.zh-CN.md
 │   ├── roadmap.md
+│   ├── roadmap.zh-CN.md
 │   ├── technical-notes.md
+│   ├── technical-notes.zh-CN.md
 │   └── adr/
 ├── agents/
 │   ├── README.md
 │   ├── BOARD.md
 │   └── agent-*/
 ├── .github/
+│   ├── ISSUE_TEMPLATE/
 │   └── workflows/
 └── requirements.txt
 ```
@@ -138,8 +147,11 @@ For technical constraints and environment setup, see:
 ## Documentation
 
 - [docs/architecture.md](docs/architecture.md) — architecture and system decomposition
+- [docs/architecture.zh-CN.md](docs/architecture.zh-CN.md) — architecture overview in Chinese
 - [docs/roadmap.md](docs/roadmap.md) — current roadmap and milestone tracking
+- [docs/roadmap.zh-CN.md](docs/roadmap.zh-CN.md) — roadmap in Chinese
 - [docs/technical-notes.md](docs/technical-notes.md) — constraints, caveats, and environment notes
+- [docs/technical-notes.zh-CN.md](docs/technical-notes.zh-CN.md) — technical notes in Chinese
 - [docs/adr/](docs/adr/) — architecture decision records
 - [agents/README.md](agents/README.md) — multi-agent collaboration rules and conventions
 

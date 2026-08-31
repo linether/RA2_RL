@@ -3,66 +3,170 @@
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-Phase%200-orange.svg)
+![Project](https://img.shields.io/badge/project-public-blueviolet.svg)
 
-基于深度强化学习的《红色警戒2：尤里的复仇》AI 训练框架。
+A research and engineering project for building a Reinforcement Learning environment around Red Alert 2: Yuri's Revenge.
 
-通过内存注入获取游戏状态，封装为 Gymnasium 标准环境，使用 Stable Baselines 3 进行 PPO 训练。
+This repository aims to provide a clean bridge from the original game runtime to a Gymnasium-style interface, with RL training entry points and a realistic validation path for both original-game and OpenRA-based experiments.
 
-## Features
+## Why this project exists
 
-- **低延迟状态接口** — 通过 `ra2yrcpp` 注入游戏进程，< 5ms 读取结构化状态
-- **Gymnasium 兼容** — 标准 `reset()` / `step()` 接口，可直接接入主流 RL 框架
-- **多模态观测** — 标量统计 / 空间特征图 / 实体列表
-- **混合奖励** — 稀疏胜负奖励 + 稠密战斗/经济 shaping
+Most public RTS RL efforts either:
+
+- depend on a custom game environment or emulator that is not the original game,
+- focus on agent logic without a reusable training environment, or
+- stop at a one-off prototype without a stable environment abstraction.
+
+This project is trying to do the harder but more useful thing: make the original game playable as a real training environment while keeping the interface clean enough for RL experimentation.
+
+## Current status
+
+As of 2026-09-01, the project is in a strong validation phase:
+
+- Phase 0 environment validation is considered complete for the original-game path.
+- The project has verified a working two-track strategy:
+  - Track A: OpenRA-RL as the main training path
+  - Track B: ra2yrcpp / pyra2yr as a fidelity-validation path for the original game
+- The remaining primary milestone is Phase 1: a minimal Gymnasium environment and a stable random-agent stress test.
+
+See [docs/roadmap.md](docs/roadmap.md) and [CLAUDE.md](CLAUDE.md) for the current project state, constraints, and execution notes.
 
 ## Architecture
 
+```text
+RL Training Stack
+    ↓
+RA2Env (Gymnasium-style interface)
+    ↓
+State / Action / Reward adapters
+    ↓
+Original-game bridge (ra2yrcpp / pyra2yr)
+    ↓
+Yuri's Revenge game process
 ```
-Training (SB3 / PPO)
-    ↕
-RA2Env (Gymnasium)
-    ↕  Socket + Protobuf
-ra2yrcpp (C++ DLL, injected)
-    ↕
-gamemd.exe (Yuri's Revenge 1.001)
+
+The repository is structured around a dual-track strategy:
+
+- Track A: OpenRA-RL for headless and fast experimental iteration
+- Track B: ra2yrcpp for original-game fidelity, validation, and replay-oriented checks
+
+## Related ecosystem
+
+This project sits in a broader ecosystem of RTS AI and research tooling:
+
+- [OpenRA-RL](https://github.com/yxc20089/OpenRA-RL) — active project building a Python environment and agent stack around OpenRA
+- [ra2yrcpp](https://github.com/shmocz/ra2yrcpp) — low-level game-process bridge for Yuri's Revenge
+- [pyra2yr](https://github.com/shmocz/pyra2yr) — Python client layer around ra2yrcpp
+- [Stable Baselines 3](https://stable-baselines3.readthedocs.io/) — RL training backend
+
+Compared with those projects, this repository is intentionally positioned as the glue layer: original-game access + standardized RL interface + reproducible training workflow.
+
+## Project structure
+
+```text
+RA2_RL/
+├── README.md
+├── CLAUDE.md
+├── LICENSE
+├── pyproject.toml
+├── requirements/
+├── scripts/
+├── tests/
+├── train/
+├── eval/
+├── ra2_env/
+├── docs/
+│   ├── architecture.md
+│   ├── roadmap.md
+│   ├── technical-notes.md
+│   └── adr/
+├── agents/
+│   ├── README.md
+│   ├── BOARD.md
+│   └── agent-*/
+├── .github/
+│   └── workflows/
+└── requirements.txt
 ```
 
-详见 [`docs/architecture.md`](docs/architecture.md)。
+## Quick start
 
-## Status
+### Dependencies
 
-Phase 0 — Environment Validation（进行中）
-
-路线图见 [`docs/roadmap.md`](docs/roadmap.md)。
-
-## Requirements
-
-- Windows 10/11
 - Python 3.10+
-- Yuri's Revenge 1.001（纯净版，不含 Ares/Phobos 等社区补丁）
-- [`ra2yrcpp`](https://github.com/shmocz/ra2yrcpp) 预编译 DLL
+- Windows 10/11 for the original-game validation path
+- A clean Yuri's Revenge installation for Track B testing
+- OpenRA-RL environment for Track A development
 
-## Installation
+### Install
 
 ```bash
 pip install -r requirements.txt
 ```
 
-游戏与 DLL 配置详见 [`docs/technical-notes.md`](docs/technical-notes.md)。
+For technical constraints and environment setup, see:
+
+- [docs/technical-notes.md](docs/technical-notes.md)
+- [docs/roadmap.md](docs/roadmap.md)
+- [docs/architecture.md](docs/architecture.md)
+
+## Roadmap
+
+### Phase 0 — Environment validation
+
+- Validate both original-game and OpenRA-based routes
+- Confirm state access and command execution
+- Establish the architecture and constraints
+
+### Phase 1 — Minimal Gym environment
+
+- Implement RA2Env with reset / step / close
+- Standardize observation and action spaces
+- Pressure-test with a random policy
+
+### Phase 2 — Baseline training
+
+- Add PPO baseline and training configuration
+- Keep evaluation reproducible and comparable
+
+### Phase 3+ — Enrichment and scaling
+
+- Observation/action improvement
+- Reward shaping and training robustness
+- Infrastructure and deployment improvements
 
 ## Documentation
 
-- [Architecture](docs/architecture.md) — 系统设计与模块划分
-- [Roadmap](docs/roadmap.md) — 开发路线图
-- [Technical Notes](docs/technical-notes.md) — 技术约束与已知限制
-- [ADR](docs/adr/) — 架构决策记录
+- [docs/architecture.md](docs/architecture.md) — architecture and system decomposition
+- [docs/roadmap.md](docs/roadmap.md) — current roadmap and milestone tracking
+- [docs/technical-notes.md](docs/technical-notes.md) — constraints, caveats, and environment notes
+- [docs/adr/](docs/adr/) — architecture decision records
+- [agents/README.md](agents/README.md) — multi-agent collaboration rules and conventions
 
-## Acknowledgements
+## Contributing
 
-- [`shmocz/ra2yrcpp`](https://github.com/shmocz/ra2yrcpp) — C++ game interface
-- [`shmocz/pyra2yr`](https://github.com/shmocz/pyra2yr) — Python client
-- [Stable Baselines 3](https://stable-baselines3.readthedocs.io/)
+Contributions are welcome, especially on:
+
+- RL environment design
+- observation/action-space improvements
+- reward engineering
+- recovery and stability tooling
+- evaluation and benchmarking
+- project documentation and reproducibility
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for development workflow, commit conventions, and contribution guidelines.
+
+## Security
+
+If you discover a vulnerability or security-sensitive issue, please do not open a public issue. See [SECURITY.md](SECURITY.md).
 
 ## License
 
-MIT
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
+
+## Acknowledgements
+
+- Red Alert 2: Yuri's Revenge
+- ra2yrcpp and pyra2yr
+- OpenRA-RL
+- Gymnasium and Stable Baselines 3

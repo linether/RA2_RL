@@ -81,15 +81,20 @@ RA2_RL/
 │       └── env/
 ├── configs/
 │   ├── README.md
-│   ├── training/
-│   ├── evaluation/
 │   └── runtime/
 ├── examples/
 │   └── README.md
 ├── scripts/
 ├── tests/
 ├── train/
+│   ├── README.md
+│   ├── __init__.py
+│   ├── train_ppo.py
+│   └── configs/
+│       ├── README.md
+│       └── baseline.json
 ├── eval/
+│   └── README.md
 ├── ra2_env/
 ├── docs/
 │   ├── architecture.md

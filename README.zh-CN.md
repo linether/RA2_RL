@@ -71,8 +71,21 @@ RA2_RL/
 ├── README.zh-CN.md
 ├── CLAUDE.md
 ├── LICENSE
+├── CONTRIBUTING.md
+├── SECURITY.md
 ├── pyproject.toml
 ├── requirements/
+├── requirements.txt
+├── src/
+│   └── ra2_rl/
+│       └── env/
+├── configs/
+│   ├── README.md
+│   ├── training/
+│   ├── evaluation/
+│   └── runtime/
+├── examples/
+│   └── README.md
 ├── scripts/
 ├── tests/
 ├── train/
@@ -80,16 +93,20 @@ RA2_RL/
 ├── ra2_env/
 ├── docs/
 │   ├── architecture.md
+│   ├── architecture.zh-CN.md
 │   ├── roadmap.md
+│   ├── roadmap.zh-CN.md
 │   ├── technical-notes.md
+│   ├── technical-notes.zh-CN.md
 │   └── adr/
 ├── agents/
 │   ├── README.md
 │   ├── BOARD.md
 │   └── agent-*/
 ├── .github/
+│   ├── ISSUE_TEMPLATE/
 │   └── workflows/
-└── requirements.txt
+└── .gitignore
 ```
 
 ## 快速开始
@@ -141,8 +158,11 @@ pip install -r requirements.txt
 ## 文档
 
 - [docs/architecture.md](docs/architecture.md) — 架构与系统分解
+- [docs/architecture.zh-CN.md](docs/architecture.zh-CN.md) — 中文架构说明
 - [docs/roadmap.md](docs/roadmap.md) — 当前路线图与里程碑
+- [docs/roadmap.zh-CN.md](docs/roadmap.zh-CN.md) — 中文路线图
 - [docs/technical-notes.md](docs/technical-notes.md) — 约束、注意事项和环境说明
+- [docs/technical-notes.zh-CN.md](docs/technical-notes.zh-CN.md) — 中文技术说明
 - [docs/adr/](docs/adr/) — 架构决策记录
 - [agents/README.md](agents/README.md) — 多 Agent 协作规范
 

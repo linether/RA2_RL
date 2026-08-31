@@ -75,6 +75,17 @@ RA2_RL/
 ├── SECURITY.md
 ├── pyproject.toml
 ├── requirements/
+├── requirements.txt
+├── src/
+│   └── ra2_rl/
+│       └── env/
+├── configs/
+│   ├── README.md
+│   ├── training/
+│   ├── evaluation/
+│   └── runtime/
+├── examples/
+│   └── README.md
 ├── scripts/
 ├── tests/
 ├── train/
@@ -95,7 +106,7 @@ RA2_RL/
 ├── .github/
 │   ├── ISSUE_TEMPLATE/
 │   └── workflows/
-└── requirements.txt
+└── .gitignore
 ```
 
 ## Quick start
